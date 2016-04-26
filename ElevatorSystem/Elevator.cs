@@ -9,23 +9,22 @@ namespace ElevatorSystem
     enum STATE { UP, DOWN, PAUSE, EXCEPTION, STOP };//电梯状态 亦可用于外部指令
     class Elevator
     {
-        STATE state;
-        int floor;
-        bool[] taskInside;//任务列表
-        bool[,] taskOutside;
+        STATE state=STATE.PAUSE;
+        int floor=1;
+        bool[] taskInside = new bool[20];//任务列表
+        bool[,] taskOutside = new bool[2, 20];
         //List<int>[] stateCache;
-        //构造函数
-        public Elevator()
+        public Elevator() { }
+        public STATE State
         {
-            state = STATE.PAUSE;
-            floor = 0;
-            taskInside = new bool[20];
-            taskOutside = new bool[2, 20];
+            get { return state; }
+            set { state = value; }
         }
-        //不知道有没有用
-        public STATE getState() {  return state;  }
-        public int getFloor() { return floor; }
-        public void setState(STATE currentstate){state=currentstate;}
+        public int Floor
+        {
+            get { return floor; }
+            set { floor = value; }
+        }
         public void run()
         {
             if (state == STATE.STOP) state = STATE.PAUSE;

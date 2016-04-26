@@ -9,7 +9,7 @@ namespace ElevatorSystem
 {
      class ElevatorCtrl
     {
-        Elevator[] elevator;
+         Elevator[] elevator;
         bool[,] taskCache;
         int size;
 
@@ -17,12 +17,21 @@ namespace ElevatorSystem
         public ElevatorCtrl(int ElevatorNum)
         {
             elevator = new Elevator[ElevatorNum];
-            size = ElevatorNum;
+            for (int i = 0; i < ElevatorNum;i++ ) elevator[i]=new Elevator();
+                size = ElevatorNum;
             taskCache = new bool[2,20];
         }
 
         //基础接口
-        public int getSize() { return size; }
+        public int Size
+        {
+            get { return size; }
+        }
+
+        public Elevator[] Elevator
+        {
+            get{return elevator;}
+        }
         public void run() //全部启动
         {
             for (int i = 0; i < size; i++) elevator[i].start();
@@ -52,19 +61,19 @@ namespace ElevatorSystem
             int best=0;
             for(int i=0;i<size;i++) //计算最大可能运动的楼层差
             {
-                if(elevator[i].getState()==STATE.PAUSE) //电梯没动
-                    prior[i]=System.Math.Abs(floor-elevator[i].getFloor());
-                else if(state==elevator[i].getState())  //同向
+                if(elevator[i].State==STATE.PAUSE) //电梯没动
+                    prior[i]=System.Math.Abs(floor-elevator[i].Floor);
+                else if(state==elevator[i].State)  //同向
                 {
-                    if ((state == STATE.UP) == (floor >= elevator[i].getFloor()))    //在前面
-                        prior[i] = System.Math.Abs(floor - elevator[i].getFloor());
+                    if ((state == STATE.UP) == (floor >= elevator[i].Floor))    //在前面
+                        prior[i] = System.Math.Abs(floor - elevator[i].Floor);
                     else
-                        prior[i] = 38 - System.Math.Abs(floor - elevator[i].getFloor());
+                        prior[i] = 38 - System.Math.Abs(floor - elevator[i].Floor);
                 }
                 else
                 {           //异向
-                    if (state == STATE.UP) prior[i] = floor + elevator[i].getFloor() - 2;
-                    else prior[i] = 40 - floor - elevator[i].getFloor();
+                    if (state == STATE.UP) prior[i] = floor + elevator[i].Floor - 2;
+                    else prior[i] = 40 - floor - elevator[i].Floor;
                 }
             }
             //挑选经过楼层差最小的电梯并分派任务
