@@ -53,13 +53,13 @@ namespace ElevatorSystem
         public void run()
         {
             if (state == STATE.EXCEPTION) return;
-            if (state == STATE.STOP) state = STATE.PAUSE;
+            if (state == STATE.STOP) State = STATE.PAUSE;
             switch(state)
             {
                 case STATE.PAUSE:
                 case STATE.UP:
-                    if (taskInside[floor - 1].task) taskInside[floor - 1].task = false;
-
+                    //taskFinish(floor);
+                    if (Floor == 20) pause();
                     for(int i=floor;i<20;i++)
                     { 
                         if (taskInside[i].task || taskOutside[(int)STATE.UP, i]||taskOutside[(int)STATE.DOWN, i])
@@ -77,6 +77,8 @@ namespace ElevatorSystem
                     }
                     break;
                 case STATE.DOWN:
+                    //taskFinish(floor);
+                    if (Floor == 1) pause();
                     for (int i = 0; i < floor - 1; i++)
                     {
                         if (taskInside[i].task || taskOutside[(int)STATE.DOWN, i] || taskOutside[(int)STATE.UP, i])

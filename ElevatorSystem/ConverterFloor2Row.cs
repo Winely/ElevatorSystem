@@ -35,4 +35,20 @@ namespace ElevatorSystem
             throw new NotImplementedException();
         }
     }
+    [ValueConversion(typeof(STATE), typeof(string))]
+    class ConverterRun2Alert : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            STATE v = (STATE)value;
+            string content = "██";
+            if (v == STATE.STOP) content = "▶";
+            return content;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

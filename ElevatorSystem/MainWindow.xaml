@@ -26,7 +26,7 @@
             <RowDefinition Height="25*"/>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="25*"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Height="35*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160*"/>
@@ -182,6 +182,10 @@
         <Button x:Name="btn402" Content="2" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Center" Width="140" Click="addTaskInside" Grid.Row="19" Grid.Column="4"/>
         <Button x:Name="btn401" Content="1" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Center" Width="140" Click="addTaskInside" Grid.Row="20" Grid.Column="4"/>
         <Label Grid.ColumnSpan="4" Content="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Grid.Column="1" HorizontalAlignment="Center" Height="42" Margin="60,6,64,0" VerticalAlignment="Top" Width="516" FontSize="24"/>
-
+        <Button x:Name="alert0" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" Grid.Row="21" VerticalAlignment="Top" Width="140" Content="██" Click="Stop"/>
+        <Button x:Name="alert1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" Grid.Row="21" VerticalAlignment="Top" Width="140" Content="██" Click="Stop" Grid.Column="1"/>
+        <Button x:Name="alert2" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" Grid.Row="21" VerticalAlignment="Top" Width="140" Content="██" Click="Stop" Grid.Column="2"/>
+        <Button x:Name="alert3" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" Grid.Row="21" VerticalAlignment="Top" Width="140" Content="██" Click="Stop" Grid.Column="3"/>
+        <Button x:Name="alert4" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" Grid.Row="21" VerticalAlignment="Top" Width="140" Content="██" Click="Stop" Grid.Column="4"/>
     </Grid>
 </Window>

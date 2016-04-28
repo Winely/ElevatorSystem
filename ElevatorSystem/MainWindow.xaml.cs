@@ -49,6 +49,13 @@ namespace ElevatorSystem
             elevatorctrl.addTaskOutside(21 - Grid.GetRow(caller), Grid.GetColumn(caller) == 5);
             //caller.IsEnabled = false;
         }
+        private void Stop(object sender, RoutedEventArgs e)
+        {
+            Button caller = (Button)sender;
+            if (elevatorctrl.Elevator[Grid.GetColumn(caller)].State == STATE.STOP)
+                elevatorctrl.Elevator[Grid.GetColumn(caller)].run();
+            else elevatorctrl.stop(Grid.GetColumn(caller));
+        }
         private void bindings()
         {
             //绑定Floor
@@ -65,6 +72,18 @@ namespace ElevatorSystem
             }
 
             //绑定按键
+            //停止键
+            Binding[] stopBinding = new Binding[5];
+            ConverterRun2Alert convertrun2alert = new ConverterRun2Alert();
+            for(int i=0;i<5;i++)
+            {
+                stopBinding[i] = new Binding("Elevator[" + i.ToString() + "].State");
+                stopBinding[i].Mode = BindingMode.OneWay;
+                stopBinding[i].Source = elevatorctrl;
+                stopBinding[i].Converter = convertrun2alert;
+                Button p = (Button)FindName("alert" + i.ToString());
+                p.SetBinding(Button.ContentProperty, stopBinding[i]);
+            }
             //内部楼层键
             Binding[,] floorBtnBinding = new Binding[5, 20];
             ConverterTask2Btn converttask2btn = new ConverterTask2Btn();
@@ -81,6 +100,7 @@ namespace ElevatorSystem
                     p.SetBinding(Button.IsEnabledProperty, floorBtnBinding[i, j]);
                 }
             }
+            //外部楼层键
             Binding[] UpBinding = new Binding[19];//上行
             for (int i = 0; i < 19; i++)
             {
@@ -104,5 +124,6 @@ namespace ElevatorSystem
                 p.SetBinding(Button.IsEnabledProperty, DownBinding[i]);
             }
         }
+
     }
 }
