@@ -1,7 +1,8 @@
-﻿<Window x:Class="ElevatorSystem.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Elevator System 1.0" Height="617" Width="968.921">
+        xmlns:local="clr-namespace:ElevatorSystem" x:Class="ElevatorSystem.MainWindow"
+        Title="Elevator System 1.0  by 1452764 Donggu" Height="617" Width="968.921">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50*"/>
@@ -180,6 +181,7 @@
         <Button x:Name="btn403" Content="3" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Center" Width="140" Click="addTaskInside" Grid.Row="18" Grid.Column="4"/>
         <Button x:Name="btn402" Content="2" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Center" Width="140" Click="addTaskInside" Grid.Row="19" Grid.Column="4"/>
         <Button x:Name="btn401" Content="1" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Center" Width="140" Click="addTaskInside" Grid.Row="20" Grid.Column="4"/>
+        <Label Grid.ColumnSpan="4" Content="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Grid.Column="1" HorizontalAlignment="Center" Height="42" Margin="60,6,64,0" VerticalAlignment="Top" Width="516" FontSize="24"/>
 
     </Grid>
 </Window>

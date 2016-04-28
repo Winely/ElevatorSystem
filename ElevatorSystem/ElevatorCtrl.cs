@@ -11,8 +11,9 @@ namespace ElevatorSystem
 {
      class ElevatorCtrl:INotifyPropertyChanged
     {
-         Elevator[] elevator;
-        bool[,] taskCache;
+        Elevator[] elevator;
+        ListWrapper[] taskCacheUp;
+        ListWrapper[] taskCacheDown;
         int size;
          public event PropertyChangedEventHandler PropertyChanged;
         //构造函数
@@ -21,7 +22,13 @@ namespace ElevatorSystem
             elevator = new Elevator[ElevatorNum];
             for (int i = 0; i < ElevatorNum;i++ ) elevator[i]=new Elevator();
                 size = ElevatorNum;
-            taskCache = new bool[2,20];
+            taskCacheUp = new ListWrapper[19];
+            taskCacheDown = new ListWrapper[19];
+            for (int i = 0; i < 19; i++)
+            {
+                taskCacheUp[i] = new ListWrapper();
+                taskCacheDown[i] = new ListWrapper();
+            }
         }
 
         //基础接口
@@ -35,15 +42,13 @@ namespace ElevatorSystem
             get{return elevator;}
         }
 
-         public bool this[int i, int j]
+        public ListWrapper[] TaskCacheUp
         {
-            get { return taskCache[i,j]; }
-            set
-            {
-                if (this.PropertyChanged != null){
-                this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("TaskCache"));
-            }
-            }
+            get { return taskCacheUp; }
+        }
+        public ListWrapper[] TaskCacheDown
+        {
+            get { return taskCacheDown; }
         }
         public void stop()//全部停止
         {
@@ -57,14 +62,14 @@ namespace ElevatorSystem
         }
         public void addTaskOutside(int floor, bool up)
         {
-            taskCache[up ? 0 : 1, floor]=true;
+            if (up) taskCacheUp[floor - 1].task = true;
+            else taskCacheDown[floor - 2].task = true;
         }
-        public void taskFinish(int floor, STATE state, int eleNum)
+        public void taskFinish(int floor, STATE state)
         {
-            if(taskCache[state==STATE.UP? 0 : 1, floor - 1])
-            {
-                taskCache[state == STATE.UP ? 0 : 1, floor - 1] = false;
-            }
+            if (state == STATE.UP)
+                taskCacheUp[floor - 1].task = false;
+            else taskCacheDown[floor - 2].task = false;
         }
         //任务分派
         public void dispatchTask(int floor, STATE state)
@@ -73,8 +78,10 @@ namespace ElevatorSystem
             int best=0;
             for(int i=0;i<size;i++) //计算最大可能运动的楼层差
             {
-                if(elevator[i].State==STATE.PAUSE) //电梯没动
-                    prior[i]=System.Math.Abs(floor-elevator[i].Floor);
+                if(elevator[i].Floor==floor &&(elevator[i].State==state || elevator[i].State==STATE.PAUSE))
+                {
+                    taskFinish(floor, state);
+                }
                 else if(state==elevator[i].State)  //同向
                 {
                     if ((state == STATE.UP) == (floor >= elevator[i].Floor))    //在前面
@@ -99,24 +106,34 @@ namespace ElevatorSystem
             while (true)
             {
                 for (int i = 0; i < 5; i++)
-                {    //取消外部任务
+                {    //完成外部任务
                     STATE state = Elevator[i].State;
                     int floor = Elevator[i].Floor;
-                    if (state == STATE.PAUSE)
+                    if (floor<=19 && taskCacheUp[floor - 1].task)
                     {
-                        taskFinish(floor, STATE.UP, i);
-                        taskFinish(floor, STATE.DOWN, i);
+                        switch (state)
+                        {
+                            case STATE.UP:
+                            case STATE.PAUSE:
+                            taskFinish(floor,STATE.UP); break;
+                        }
                     }
-                    else taskFinish(floor, state, i);
+                    if (floor >= 2 && taskCacheDown[floor - 2].task)
+                    {
+                        switch(state)
+                        {
+                            case STATE.DOWN:
+                            case STATE.PAUSE:
+                                taskFinish(floor,STATE.DOWN); break;
+                        }
+                    }
                     //清空已分派任务
                     Elevator[i].clear();
                 }
-                for (int i = 0; i < 2; i++)//重新分派任务
+                for (int j = 0; j < 19; j++)//重新分派任务
                 {
-                    for (int j = 0; j < 20; j++)
-                    {
-                        if (taskCache[i, j]) dispatchTask(j + 1, (STATE)i);
-                    }
+                    if (taskCacheUp[j].task) dispatchTask(j + 1, STATE.UP);
+                    if (taskCacheDown[j].task) dispatchTask(j + 2, STATE.DOWN);
                 }
                 for (int i = 0; i < 5; i++) Elevator[i].run();
                 Thread.Sleep(800);

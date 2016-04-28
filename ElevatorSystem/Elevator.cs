@@ -13,11 +13,17 @@ namespace ElevatorSystem
     {
         STATE state=STATE.PAUSE;
         int floor=1;
-        bool[] taskInside = new bool[20];//任务列表
+        ListWrapper[] taskInside = new ListWrapper[20];//任务列表
         bool[,] taskOutside = new bool[2, 20];
         public event PropertyChangedEventHandler PropertyChanged;
         //Property
-        public Elevator() { }
+        public Elevator() 
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                taskInside[i] = new ListWrapper();
+            }
+        }
         public STATE State
         {
             get { return state; }
@@ -34,22 +40,16 @@ namespace ElevatorSystem
                 { 
                     this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("Floor")); 
                     //检查取消事件
-                    taskInside[floor - 1] = false;//完成相应内部任务
+                    taskFinish(value);//完成相应内部任务
                 }
             }
         }
 
-        public bool this[int i]
+        public ListWrapper[] TaskInside
         {
-            get { return taskInside[i]; }
-            set
-            {
-                if (this.PropertyChanged != null)
-                {
-                    this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("TaskInside"));
-                }
-            }
+            get { return taskInside; }
         }
+
         public void run()
         {
             if (state == STATE.EXCEPTION) return;
@@ -58,9 +58,11 @@ namespace ElevatorSystem
             {
                 case STATE.PAUSE:
                 case STATE.UP:
+                    if (taskInside[floor - 1].task) taskInside[floor - 1].task = false;
+
                     for(int i=floor;i<20;i++)
                     { 
-                        if (taskInside[i] || taskOutside[(int)STATE.UP, i]||taskOutside[(int)STATE.DOWN, i])
+                        if (taskInside[i].task || taskOutside[(int)STATE.UP, i]||taskOutside[(int)STATE.DOWN, i])
                         {
                             up(); return;
                         }
@@ -68,7 +70,7 @@ namespace ElevatorSystem
                     }
                     for(int i=0;i<floor-1;i++)
                     {
-                        if(taskInside[i]||taskOutside[(int)STATE.DOWN, i]||taskOutside[(int)STATE.UP, i])
+                        if(taskInside[i].task||taskOutside[(int)STATE.DOWN, i]||taskOutside[(int)STATE.UP, i])
                         {
                             down(); return;
                         }
@@ -77,7 +79,7 @@ namespace ElevatorSystem
                 case STATE.DOWN:
                     for (int i = 0; i < floor - 1; i++)
                     {
-                        if (taskInside[i] || taskOutside[(int)STATE.DOWN, i] || taskOutside[(int)STATE.UP, i])
+                        if (taskInside[i].task || taskOutside[(int)STATE.DOWN, i] || taskOutside[(int)STATE.UP, i])
                         {
                             down(); return;
                         }
@@ -85,7 +87,7 @@ namespace ElevatorSystem
                     }
                     for (int i = floor; i < 20; i++)
                     {
-                        if (taskInside[i] || taskOutside[(int)STATE.UP, i] || taskOutside[(int)STATE.DOWN, i])
+                        if (taskInside[i].task || taskOutside[(int)STATE.UP, i] || taskOutside[(int)STATE.DOWN, i])
                         {
                             up(); return;
                         }
@@ -127,13 +129,38 @@ namespace ElevatorSystem
         //添加任务
         public void addTaskInside(int task)   //电梯内按键
         {
-            taskInside[task - 1] = true;
+            taskInside[task - 1].task = true;
         }
         public void addTaskOutside(int task, STATE direct)   //电梯外按键
         {
             taskOutside[(int)direct, task-1]=true;
         }
-          
+        
+        //完成任务
+        public void taskFinish(int task)
+        {
+            if (taskInside[task - 1].task)
+                taskInside[task - 1].task = false;
+        }
        
     }
+
+    class ListWrapper:INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private bool task_value = false;
+        public bool task
+        {
+            get { return task_value; }
+            set
+            {
+                task_value = value;
+            if (this.PropertyChanged != null){
+                this.PropertyChanged.Invoke(this, new PropertyChangedEventArgs("task"));
+            }
+            }
+        }
+    }
+
+
 }
